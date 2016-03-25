@@ -1,0 +1,100 @@
+sys:sys1 a t:system;
+           rdfs:label "sys1" .
+           rel:systemOwner p:jsmith .
+           rel:isInRoom "x"
+            
+p:jsmith a t:person;  
+         rdfs:label "John Smith";
+         rel:email "john.smith@orgx.com" .
+
+p:pcook a t:person;
+        rdfs:label "Peter Cook";
+        rel:email "peter.cook@orgx.com" .
+             
+conf:sys1conf1 a t:configuration;
+               rdfs:label "sys1conf1";
+               #rel:hasDescription "bootstrap node 1"
+               rel:isPartOfSys sys:sys1;
+               rel:basedOnBuild build:ML8StandardBuild;
+               rel:isConnectedToRouter rt:1;
+               rel:runsOnEnv env:e1;
+               rel:status "up" .
+
+build:ML8StandardBuild a t:build;
+                       rdfs:label "ML8 on RHEL65p1"
+                       rel:hasDescription "RHEL 6.5 patch 1 and MarkLogic version 8"
+                       rel:hasSoftware sw:RHEL65p1;
+                       rel:hasSoftware sw:ML8
+                       rel:hasSoftware sw:Java1.8 .
+                       
+sw:RHEL65p1 a t:software;
+            rdfs:label "Red Hat Enterprise Linux 6.5 patch 1";
+            rel:softwareVersion "6.5p1"
+            rel:softwareLicense lic:RHEL .
+
+sw:ML8 a t:software;
+       rdfs:label "MarkLogic Server 8.0-4";
+       rel:softwareVersion "8.0-4";
+       rel:softwareLicense lic:ML .
+
+lic:RHEL a t:softwareLicense;
+         rdfs:label "Red Hat Enterprise Linux";
+         rel:licenseQuantity 10;
+         rel:licenseUnits "server" .
+
+lic:ML a t:softwareLicense;
+         rdfs:label "MarkLogic Server";
+         rel:licenseQuantity 10;
+         rel:licenseUnits "core" .
+         
+env:e1 a t:servervirtual;
+       rdfs:label "env2";
+       rel:hasCPU "Intel Xeon";
+       rel:hasRAMGB 128;
+       rel:hasSANStorageTB 7;
+       rel:runsOnEnv env:e2;
+       re:status "up" .
+
+env:e2 a t:serverphysical;
+       rdfs:label "env2";
+       rel:hasCPU "Intel Xeon";
+       rel:hasRAMGB 1024;
+       rel:hasLocalStorageTB 1;
+       rel:mountedInRack rk:1;
+       #rel:maintainedBy p:pcook;
+       rel:status "up" .
+
+rk:1 a t:rack;
+     rdfs:label "rk1";
+     rel:isInRoom rm:1;
+     rel:status "up" .
+
+rt:1 a t:router;
+     rdfs:label "rt1";
+     rel:isInRoom rm:1;
+     rel:status "up" .
+
+rt:2 a t:router;
+     rdfs:label "rt2";
+     rel:isInRoom rm:1;
+     rel:status "up" .
+
+rm:1 a t:room;
+     rdfs:label "b1l1rm1"
+     rel:level 1;
+
+lvl:1 a t:level;
+      rdfs:label "level 1";
+      rel:building b:bA .
+
+b:bA a t:building;
+     rdfs:label "bA";
+     rel:address "123 Park Ave";
+     rel:city city:newyork .
+
+city:newyork a t:city;
+             rdfs:label "New York City";
+             rel:country ctry:USA .
+           
+ctry:USA a t:country;
+         rdfs:label "USA" .
