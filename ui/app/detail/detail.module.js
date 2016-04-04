@@ -4,6 +4,7 @@
   angular.module('app.detail', [
     'app.similar',
     'ui.router',
-    'app.graph'
+    'app.graph',
+    'ml.lodlive'
   ]);
 }());

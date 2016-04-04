@@ -23,10 +23,10 @@
   function mlD3GraphImage(mlRest) {
     return {
       restrict: 'E',
-      templateUrl: 'app/detail/d3-graph-directive.image.html',
+      templateUrl: 'app/graph/d3-graph-directive.image.html',
       controller: 'mlD3GraphControllerImage',
       controllerAs: 'ctrl',
-      scope: { uri: '@' }
+      scope: { scopeId: '@' }
     };
 
   }
@@ -43,20 +43,16 @@
       init: init
     });
 
+    // $scope.$watch('uri', function(newValue) {
+    //   console.log('uri changed');
+    //   init();
+    //   console.log($scope.uri);
+    // });
+
     init();
 
     function init() {
-      var scopeId = $scope.uri;
-      if (scopeId.indexOf('/data/') === 0) {
-        scopeId = scopeId.substring(6);
-      }
-
-      var extIdx = scopeId.indexOf('.json');
-      if (extIdx >= 0) {
-        scopeId = scopeId.substring(0, extIdx);
-      }
-
-      ctrl.id = scopeId;
+      ctrl.id =  $scope.scopeId;
 
       mlRest.extension('rootcauseanalysis',
         {
@@ -72,7 +68,6 @@
             processLinks(ctrl.links);
             initGraph();
           }
-          // console.log(ctrl.links);
         });
     };
 
@@ -131,6 +126,9 @@
         .on("drag", dragged)
         .on("dragend", dragended);
 
+      var drag2 = force.drag()
+        .on("dragstart", dragstart2);
+
 
       var svg = d3.select("div#containerImage").append("svg:svg")
         .attr("style", "display: inline; width: 100%; min-width: inherit; max-width: inherit; height: inherit; min-height: inherit; max-height: inherit;")
@@ -144,12 +142,15 @@
         .enter().append("svg:marker")
           .attr("id", String)
           .attr("viewBox", "0 -5 10 10")
-          .attr("refX", 15)
-          .attr("refY", -1.5)
+          .attr("refX", 16)
+          // .attr("refY", -1.5)
+          .attr("refY", 0)
           .attr("markerWidth", 10)
           .attr("markerHeight", 10)
           .attr("orient", "auto")
         .append("svg:path")
+          // Removed curve link line
+          // .attr("d", "M0,-5L10,0L0,5");
           .attr("d", "M0,-5L10,0L0,5");
 
       var link = svgg.selectAll(".link")
@@ -160,22 +161,26 @@
         .attr("class", function(d) { return "link licensing" })
         .attr("marker-end", function(d) { return "url(" + absUrl + "#end)"; });
 
+      var textPath = link.append("svg:path")
+        .attr("id", function(d) { console.log(d); console.log(d.source); return d.source.index + "_" + d.target.index; })
+        .attr("class", "textpath");
+
       var circle = svgg.append("svg:g").selectAll("circle")
         .data(force.nodes())
         .enter().append("svg:image")
           .attr("class", function(d) {
             return d.objectType.replace(/["]/g, '');
           })
-          // .attr("xlink:href", "/images/logo.png")
-          // .attr("xlink:href", "/images/google.svg")
           .attr("xlink:href", function(d) {
-            console.log(d);
             return "/images/" + d.objectType + ".png";
           })
           .attr("x", "-10px")
           .attr("y", "-10px")
           .attr("width", "20px")
-          .attr("height", "20px");
+          .attr("height", "20px")
+        .on("dblclick", dblclick)
+        // .call(force.drag);
+        .call(drag2);
 
       var text = svgg.append("svg:g").selectAll("g")
         .data(force.nodes())
@@ -193,6 +198,21 @@
         .attr("y", ".31em")
         .text(function(d) { return d.name; });
 
+      // This block adds the link labels.
+      var path_label = svgg.append("svg:g").selectAll(".path_label")
+          .data(force.links())
+        .enter().append("svg:text")
+          .attr("class", "path_label")
+          .append("svg:textPath")
+            .attr("startOffset", "50%")
+            .attr("text-anchor", "middle")
+            .attr("xlink:href", function(d) { return "#" + d.source.index + "_" + d.target.index; })
+            .style("fill", "#000")
+            .style("font-family", "Arial")
+            .append("svg:tspan")
+            .attr("dy", "-3")
+            .text(function(d) { return d.type; });
+
       // Keep the graph from bouncing initially.
       force.start();
       for (var i = 10000; i > 0; --i) force.tick();
@@ -204,8 +224,19 @@
 
       function dragstarted(d) {
         d3.event.sourceEvent.stopPropagation();
-        d3.select(this).classed("dragging", true);
-        force.start();
+        // d3.select(this).classed("dragging", true);
+        // force.start();
+
+        d3.select(this).classed("fixed", d.fixed = true);
+      }
+
+      function dragstart2(d) {
+        d3.event.sourceEvent.stopPropagation();
+        d3.select(this).classed("fixed", d.fixed = true);
+      }
+
+      function dblclick(d) {
+        d3.select(this).classed("fixed", d.fixed = false);
       }
 
       function dragged(d) {
@@ -216,6 +247,7 @@
 
       function dragended(d) {
         d3.select(this).classed("dragging", false);
+        console.log('drag end');
       }
 
       function arcPath(leftHand, d) {
@@ -225,7 +257,9 @@
           dy = end.y - start.y,
           dr = Math.sqrt(dx * dx + dy * dy),
           sweep = leftHand ? 0 : 1;
-        return "M" + start.x + "," + start.y + "A" + dr + "," + dr + " 0 0," + sweep + " " + end.x + "," + end.y;
+        // Removed curved link line
+        // return "M" + start.x + "," + start.y + "A" + dr + "," + dr + " 0 0," + sweep + " " + end.x + "," + end.y;
+        return "M" + start.x + "," + start.y + "A" + 0 + "," + 0 + " 0 0," + sweep + " " + end.x + "," + end.y;
       };
 
       // Use elliptical arc path segments to doubly-encode directionality.
@@ -234,9 +268,9 @@
           return arcPath(false, d);
         });
 
-        // textPath.attr("d", function(d) {
-        //   return arcPath(d.source.x < d.target.x, d);
-        // });
+        textPath.attr("d", function(d) {
+          return arcPath(d.source.x < d.target.x, d);
+        });
 
         //circle.attr("transform", function(d) {
         circle.attr("transform", function(d) {

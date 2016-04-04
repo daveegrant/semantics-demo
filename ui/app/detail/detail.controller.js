@@ -3,8 +3,8 @@
   angular.module('app.detail')
   .controller('DetailCtrl', DetailCtrl);
 
-  DetailCtrl.$inject = ['doc', '$stateParams'];
-  function DetailCtrl(doc, $stateParams) {
+  DetailCtrl.$inject = ['doc', '$stateParams', 'MLLodliveProfileFactory'];
+  function DetailCtrl(doc, $stateParams, lodliveProfileFactory) {
     var ctrl = this;
 
     var uri = $stateParams.uri;
@@ -37,9 +37,25 @@
       ctrl.json = {'Error' : 'Error occured determining document type.'};
     }
 
+    var scopeId = uri;
+    if (scopeId.indexOf('/data/') === 0) {
+      scopeId = scopeId.substring(6);
+    }
+
+    var extIdx = scopeId.indexOf('.json');
+    if (extIdx >= 0) {
+      scopeId = scopeId.substring(0, extIdx);
+    }
+
+    var iri = 'http://semantics-demo/' + scopeId;
+    var profile = lodliveProfileFactory.profile('');
+
     angular.extend(ctrl, {
       doc : doc.data,
-      uri : uri
+      uri : uri,
+      iri : iri,
+      scopeId: scopeId,
+      profile : profile
     });
   }
 }());

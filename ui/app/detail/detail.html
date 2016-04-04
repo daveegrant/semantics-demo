@@ -1,18 +1,40 @@
 <div class="row detail">
-  <div class="col-sm-8">
+  <div class="form-group">
+    <div class="row">
+      <label class="col-md-1 control-label">Scope: </label>
+      <div class="col-md-10">
+        <input type="text" class="form-control" placeholder="scope" ng-model="ctrl.uri">
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-primary" ng-click="">Submit</button>
+      </div>
+    </div>
+    <div class="row"></div>
+  </div>
+  <div class="col-sm-12">
     <uib-tabset type="pills">
-      <uib-tab active="true">
-        <uib-tab-heading >Graph</uib-tab-heading>
+      <!-- <uib-tab active="true">
+        <uib-tab-heading >Graph-base</uib-tab-heading>
         <ml-d3-graph uri={{ctrl.uri}}></ml-d3-graph>
       </uib-tab>
       <uib-tab>
         <uib-tab-heading >Graph2</uib-tab-heading>
         <ml-d3-graph-zoom uri={{ctrl.uri}}></ml-d3-graph-zoom>
+      </uib-tab> -->
+      <uib-tab active="true">
+        <uib-tab-heading >Graph</uib-tab-heading>
+        <ml-d3-graph-image scope-id={{ctrl.scopeId}}></ml-d3-graph-image>
       </uib-tab>
       <uib-tab>
-        <uib-tab-heading >Graph-Image</uib-tab-heading>
-        <ml-d3-graph-image uri={{ctrl.uri}}></ml-d3-graph-image>
+        <uib-tab-heading >LodLive</uib-tab-heading>
+        <ml-lodlive iri="ctrl.iri" profile="ctrl.profile"></ml-lodlive>
       </uib-tab>
+      <!-- <uib-tab ng-if="ctrl.type==='json'">
+        <uib-tab-heading >XML</uib-tab-heading>
+        <div class="col-sm-9">
+          <pre class="pre-xml">{{ctrl.xml}}</pre>
+        </div>
+      </uib-tab> -->
       <uib-tab>
         <uib-tab-heading>{{ctrl.type | uppercase}}</uib-tab-heading>
         <div class="col-sm-9">
@@ -23,27 +45,30 @@
 
         </div>
       </uib-tab>
+      <uib-tab>
+        <uib-tab-heading >Similar</uib-tab-heading>
+        <div class="panel panel-default">
+          <div class="panel-heading">Similar</div>
+          <div class="panel-body">
+            <ml-similar uri="{{ctrl.uri}}" limit="5"></ml-similar>
+          </div>
+        </div>
+      </uib-tab>
       <!-- <uib-tab ng-if="ctrl.type!=='json'">
         <uib-tab-heading>JSON</uib-tab-heading>
         <div class="col-sm-9">
           <json-explorer data="ctrl.json"></json-explorer>
         </div>
       </uib-tab> -->
-      <uib-tab ng-if="ctrl.type==='json'">
-        <uib-tab-heading >XML</uib-tab-heading>
-        <div class="col-sm-9">
-          <pre class="pre-xml">{{ctrl.xml}}</pre>
-        </div>
-      </uib-tab>
+
     </uib-tabset>
   </div>
-  <div class="col-sm-4">
-    <!-- show (links to) similar documents -->
+  <!-- <div class="col-sm-4">
     <div class="panel panel-default">
       <div class="panel-heading">Similar</div>
       <div class="panel-body">
         <ml-similar uri="{{ctrl.uri}}" limit="5"></ml-similar>
       </div>
     </div>
-  </div>
+  </div> -->
 </div>

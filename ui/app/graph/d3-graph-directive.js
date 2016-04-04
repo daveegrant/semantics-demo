@@ -23,7 +23,7 @@
   function mlD3Graph(mlRest) {
     return {
       restrict: 'E',
-      templateUrl: 'app/detail/d3-graph-directive.html',
+      templateUrl: 'app/graph/d3-graph-directive.html',
       controller: 'mlD3GraphController',
       controllerAs: 'ctrl',
       scope: { uri: '@' }

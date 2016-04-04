@@ -17,7 +17,8 @@
     'ui.bootstrap',
     'ui.router',
     'ui.tinymce',
-    'app.graph'
+    'app.graph',
+    'ml.lodlive'
   ]);
 
 }());

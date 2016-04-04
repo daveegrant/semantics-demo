@@ -23,7 +23,7 @@
   function mlD3GraphZoom(mlRest) {
     return {
       restrict: 'E',
-      templateUrl: 'app/detail/d3-graph-directive.mouse-zoom.html',
+      templateUrl: 'app/graph/d3-graph-directive.mouse-zoom.html',
       controller: 'mlD3GraphControllerZoom',
       controllerAs: 'ctrl',
       scope: { uri: '@' }
@@ -167,14 +167,9 @@
           .attr("class", function(d) {
             return d.objectType.replace(/["]/g, '');
           })
-          .attr("r", 10);
-          //.attr("oncontextmenu", "javascript:alert('success!');return false;")
-          // .attr("oncontextmenu", function(d) {
-          //     var docURI = d.docURI
-          //     return "showDoc(\""+docURI+"\");return false;"
-          //   })
+          .attr("r", 10)
           // .call(force.drag);
-          // .call(drag);
+          .call(drag);
 
       var text = svgg.append("svg:g").selectAll("g")
         .data(force.nodes())
@@ -208,12 +203,15 @@
       }
 
       function dragged(d) {
-        console.log(d.x + " - " + d3.event.x);
-        console.log(d.y + " - " + d3.event.y);
-        d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+        // console.log("x: " + d.x + " - " + d3.event.x);
+        // console.log("y: " + d.y + " - " + d3.event.y);
+        d.x = d3.event.x;
+        d.y = d3.event.y;
+        // d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
       }
 
       function dragended(d) {
+        console.log('drag end');
         d3.select(this).classed("dragging", false);
       }
 
@@ -227,8 +225,22 @@
         return "M" + start.x + "," + start.y + "A" + dr + "," + dr + " 0 0," + sweep + " " + end.x + "," + end.y;
       };
 
-      // Use elliptical arc path segments to doubly-encode directionality.
       function tick() {
+        // linkPath.attr("x1", function(d) { return d.source.x; })
+        //   .attr("y1", function(d) { return d.source.y; })
+        //   .attr("x2", function(d) { return d.target.x; })
+        //   .attr("y2", function(d) { return d.target.y; });
+
+        linkPath.attr("d", function(d) { return arcPath(false, d); });
+        circle.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+        // circle.attr("cx", function(d) { return d.x; })
+        //   .attr("cy", function(d) { return d.y; });
+        text.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+      };
+
+      // Use elliptical arc path segments to doubly-encode directionality.
+      function tickOld() {
         linkPath.attr("d", function(d) {
           return arcPath(false, d);
         });

@@ -12,6 +12,8 @@
     <!-- bower:css -->
     <link rel="stylesheet" href="/bower_components/highlightjs/styles/default.css" />
     <link rel="stylesheet" href="/bower_components/ng-json-explorer/dist/angular-json-explorer.css" />
+    <link rel="stylesheet" href="/bower_components/ml-lodlive/css/ml-lodlive.css" />
+    <link rel="stylesheet" href="/bower_components/ml-lodlive-ng/dist/ml-lodlive-ng.css" />
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -28,6 +30,7 @@
 
     <!-- build:js js/lib.js -->
     <!-- bower:js -->
+    <script src="/bower_components/jquery/dist/jquery.js"></script>
     <script src="/bower_components/angular/angular.js"></script>
     <script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="/bower_components/angular-cookies/angular-cookies.js"></script>
@@ -39,7 +42,6 @@
     <script src="/bower_components/angular-ui-tinymce/src/tinymce.js"></script>
     <script src="/bower_components/x2js/xml2json.min.js"></script>
     <script src="/bower_components/angular-x2js/dist/x2js.min.js"></script>
-    <script src="/bower_components/jquery/dist/jquery.js"></script>
     <script src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="/bower_components/lodash/lodash.js"></script>
     <script src="/bower_components/ml-common-ng/dist/ml-common-ng.js"></script>
@@ -48,6 +50,8 @@
     <script src="/bower_components/ml-utils/ml-utils.js"></script>
     <script src="/bower_components/ng-json-explorer/dist/angular-json-explorer.js"></script>
     <script src="/bower_components/vkbeautify-wrapper/dist/vkbeautify.0.99.00.beta.js"></script>
+    <script src="/bower_components/ml-lodlive/dist/ml-lodlive.complete.js"></script>
+    <script src="/bower_components/ml-lodlive-ng/dist/ml-lodlive-ng.js"></script>
     <!-- endbower -->
     <script src="/bower_components/tinymce-dist/themes/modern/theme.js"></script>
     <!-- endbuild -->
@@ -56,8 +60,8 @@
     <!-- inject:js -->
     <script src="/ui/app/create/create.module.js"></script>
     <script src="/ui/app/detail/detail.module.js"></script>
-    <script src="/ui/app/detail/similar.module.js"></script>
     <script src="/ui/app/detail/graph.module.js"></script>
+    <script src="/ui/app/detail/similar.module.js"></script>
     <script src="/ui/app/error/error.module.js"></script>
     <script src="/ui/app/login/login.module.js"></script>
     <script src="/ui/app/message-board/message-board.module.js"></script>
@@ -67,13 +71,14 @@
     <script src="/ui/app/user/user.module.js"></script>
     <script src="/ui/app/app.js"></script>
     <script src="/ui/app/create/create.controller.js"></script>
+    <script src="/ui/app/graph/d3-graph-directive.image.js"></script>
+    <script src="/ui/app/graph/d3-graph-directive.js"></script>
+    <script src="/ui/app/graph/d3-graph-directive.mouse-zoom.js"></script>
+    <script src="/ui/app/graph/d3-graph-nav.js"></script>
     <script src="/ui/app/detail/detail.controller.js"></script>
     <script src="/ui/app/detail/similar-directive.js"></script>
-    <script src="/ui/app/detail/d3-graph-directive.js"></script>
-    <script src="/ui/app/detail/d3-graph-directive.mouse-zoom.js"></script>
-    <script src="/ui/app/detail/d3-graph-directive.image.js"></script>
-    <script src="/ui/app/detail/d3-graph-nav.js"></script>
     <script src="/ui/app/error/errorInterceptor.service.js"></script>
+    <script src="/ui/app/lib/d3.v3.js"></script>
     <script src="/ui/app/login/login.controller.js"></script>
     <script src="/ui/app/login/login.directive.js"></script>
     <script src="/ui/app/login/login.service.js"></script>
@@ -87,7 +92,6 @@
     <script src="/ui/app/user/profile.controller.js"></script>
     <script src="/ui/app/user/user.directive.js"></script>
     <script src="/ui/app/user/user.service.js"></script>
-    <script src="/ui/app/lib/d3.v3.js"></script>
     <!-- endinject -->
 
     <!-- inject:templates:js -->
