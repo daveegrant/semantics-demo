@@ -3,8 +3,8 @@
   angular.module('app.detail')
   .controller('DetailCtrl', DetailCtrl);
 
-  DetailCtrl.$inject = ['doc', '$stateParams', 'MLLodliveProfileFactory'];
-  function DetailCtrl(doc, $stateParams, lodliveProfileFactory) {
+  DetailCtrl.$inject = ['doc', '$stateParams', 'MLLodliveProfileFactory', 'MLRest'];
+  function DetailCtrl(doc, $stateParams, lodliveProfileFactory, mlRest) {
     var ctrl = this;
 
     var uri = $stateParams.uri;
@@ -50,12 +50,30 @@
     var iri = 'http://semantics-demo/' + scopeId;
     var profile = lodliveProfileFactory.profile('');
 
+    function suggest(d) {
+      var myp =
+        mlRest.extension('suggest',
+          {
+            method: 'GET',
+            params:
+              {
+                'rs:str': d.val
+              }
+          })
+          .then(function(res) {
+            return res.data || [];
+          });
+
+      return myp;
+    }
+
     angular.extend(ctrl, {
       doc : doc.data,
       uri : uri,
       iri : iri,
       scopeId: scopeId,
-      profile : profile
+      profile : profile,
+      suggest: suggest
     });
   }
 }());

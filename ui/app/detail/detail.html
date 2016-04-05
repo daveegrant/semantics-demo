@@ -3,7 +3,7 @@
     <div class="row">
       <label class="col-md-1 control-label">Scope: </label>
       <div class="col-md-10">
-        <input type="text" class="form-control" placeholder="scope" ng-model="ctrl.uri">
+        <input type="text" class="form-control" placeholder="Enter Scope..." ng-model="ctrl.scopeId" typeahead="suggestion for suggestion in ctrl.suggest({ val: $viewValue })" typeahead-loading="loadingSuggestions" />
       </div>
       <div class="col-md-1">
         <button class="btn btn-primary" ng-click="">Submit</button>
@@ -24,6 +24,10 @@
       <uib-tab active="true">
         <uib-tab-heading >Graph</uib-tab-heading>
         <ml-d3-graph-image scope-id={{ctrl.scopeId}}></ml-d3-graph-image>
+      </uib-tab>
+      <uib-tab>
+        <uib-tab-heading >Impact Analysis</uib-tab-heading>
+        <ml-d3-graph-impact-analysis scope-id={{ctrl.scopeId}} down-entity={{ctrl.downEntity}}></ml-d3-graph-impact-analysis>
       </uib-tab>
       <uib-tab>
         <uib-tab-heading >LodLive</uib-tab-heading>

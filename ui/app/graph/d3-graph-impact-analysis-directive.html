@@ -1,0 +1,15 @@
+<div>
+  <div class="form-group">
+    <div class="row">
+      <label class="col-md-2 control-label">Down Entity: </label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" placeholder="Enter Down Entity..." ng-model="downEntity" typeahead="suggestion for suggestion in ctrl.suggest({ val: $viewValue })" typeahead-loading="loadingSuggestions" />
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-primary" ng-click="">Submit</button>
+      </div>
+    </div>
+    <div class="row"></div>
+  </div>
+  <div id="containerImpact"></div>
+</div>

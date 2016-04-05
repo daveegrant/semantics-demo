@@ -15,35 +15,45 @@
   };
 
   angular.module('app.graph')
-    .directive('mlD3GraphImage', mlD3GraphImage)
-    .controller('mlD3GraphControllerImage', mlD3GraphControllerImage);
+    .directive('mlD3GraphImpactAnalysis', mlD3GraphImpactAnalysis)
+    .controller('mlD3GraphImpactAnalysisControllerImage', mlD3GraphImpactAnalysisControllerImage);
 
-  mlD3GraphImage.$inject = ['MLRest'];
+  mlD3GraphImpactAnalysis.$inject = ['MLRest'];
 
-  function mlD3GraphImage(mlRest) {
+  function mlD3GraphImpactAnalysis(mlRest) {
     return {
       restrict: 'E',
-      templateUrl: 'app/graph/d3-graph-directive.image.html',
-      controller: 'mlD3GraphControllerImage',
+      templateUrl: 'app/graph/d3-graph-impact-analysis-directive.html',
+      controller: 'mlD3GraphImpactAnalysisControllerImage',
       controllerAs: 'ctrl',
-      scope: { scopeId: '@' }
+      scope: {
+        scopeId: '@'
+      }
     };
 
   }
 
-  mlD3GraphControllerImage.$inject = ['$scope', 'MLRest', '$location'];
+  mlD3GraphImpactAnalysisControllerImage.$inject = ['$scope', 'MLRest', '$location'];
 
-  function mlD3GraphControllerImage($scope, mlRest, $location) {
+  function mlD3GraphImpactAnalysisControllerImage($scope, mlRest, $location) {
     var ctrl = this;
 
     angular.extend(ctrl, {
       id: '',
+      downEntity: '',
       links: [],
       nodes: null,
-      init: init
+      init: init,
+      suggest: suggest
     });
 
     $scope.$watch('scopeId', function(newValue) {
+      clearGraph();
+      init();
+    });
+
+    $scope.$watch('downEntity', function(newValue) {
+      ctrl.downEntity = newValue;
       clearGraph();
       init();
     });
@@ -52,13 +62,13 @@
 
     function init() {
       ctrl.id =  $scope.scopeId;
-
-      mlRest.extension('rootcauseanalysis',
+      mlRest.extension('impactanalysis',
         {
           method: 'GET',
           params:
             {
-              'rs:scope': ctrl.id
+              'rs:scope': ctrl.id,
+              'rs:downrootentity': ctrl.downEntity
             }
         })
         .then(function(response) {
@@ -103,9 +113,27 @@
       ctrl.nodes = nodes;
     };
 
+    function suggest(d) {
+      var myp =
+        mlRest.extension('suggest',
+          {
+            method: 'GET',
+            params:
+              {
+                'rs:str': d.val
+              }
+          })
+          .then(function(res) {
+            return res.data || [];
+          });
+
+      return myp;
+    }
+
     function clearGraph() {
       // d3.select("svg").remove();
-      d3.select("#imageGraph").remove();
+      d3.select("#containerImpact svg").remove();
+
     }
 
     function initGraph() {
@@ -138,8 +166,7 @@
         .on("dragstart", dragstart2);
 
 
-      var svg = d3.select("div#containerImage").append("svg:svg")
-        .attr("id", "imageGraph")
+      var svg = d3.select("div#containerImpact").append("svg:svg")
         .attr("style", "display: inline; width: 100%; min-width: inherit; max-width: inherit; height: inherit; min-height: inherit; max-height: inherit;")
         .call(zoom);
 
