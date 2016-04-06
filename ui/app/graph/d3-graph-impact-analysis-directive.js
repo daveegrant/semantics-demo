@@ -30,8 +30,7 @@
         scopeId: '@'
       }
     };
-
-  }
+  };
 
   mlD3GraphImpactAnalysisControllerImage.$inject = ['$scope', 'MLRest', '$location'];
 
@@ -40,27 +39,30 @@
 
     angular.extend(ctrl, {
       id: '',
+      nodeData: null,
+      showNodeData: true,
       downEntity: '',
       links: [],
       nodes: null,
-      init: init,
-      suggest: suggest
+      search: search,
+      suggest: suggest,
+      hideNodeData: hideNodeData
     });
 
     $scope.$watch('scopeId', function(newValue) {
       clearGraph();
-      init();
+      search();
     });
 
-    $scope.$watch('downEntity', function(newValue) {
-      ctrl.downEntity = newValue;
-      clearGraph();
-      init();
-    });
+    // $scope.$watch('downEntity', function(newValue) {
+    //   ctrl.downEntity = newValue;
+    //   clearGraph();
+    //   init();
+    // });
 
-    init();
+    search();
 
-    function init() {
+    function search() {
       ctrl.id =  $scope.scopeId;
       mlRest.extension('impactanalysis',
         {
@@ -75,9 +77,13 @@
           if (response && response.data) {
             ctrl.links = response.data;
             processLinks(ctrl.links);
-            initGraph();
+            updateGraph();
           }
         });
+    };
+
+    function hideNodeData() {
+      ctrl.showNodeData = false;
     };
 
     function processLinks(links) {
@@ -133,10 +139,9 @@
     function clearGraph() {
       // d3.select("svg").remove();
       d3.select("#containerImpact svg").remove();
+    };
 
-    }
-
-    function initGraph() {
+    function updateGraph() {
       var width = 800; //960,
       var height = 500;  //500;
       var absUrl = $location.absUrl();
@@ -208,18 +213,90 @@
         .data(force.nodes())
         .enter().append("svg:image")
           .attr("class", function(d) {
-            return d.objectType.replace(/["]/g, '');
+            var type = d.objectType.replace(/["]/g, '');
+            var idx = type.indexOf(' down entity');
+            if (idx >= 0) {
+              type = type.substring(0, idx) + ' entity';
+            }
+            return type;
           })
           .attr("xlink:href", function(d) {
-            return "/images/" + d.objectType + ".png";
+            var type = d.objectType;
+            var idx = type.indexOf(' down');
+            if (idx >= 0) {
+              type = type.substring(0, idx);
+            }
+            return "/images/" + type + ".png";
           })
           .attr("x", "-10px")
           .attr("y", "-10px")
           .attr("width", "20px")
           .attr("height", "20px")
         .on("dblclick", dblclick)
+        .on("click", singleclick)
         // .call(force.drag);
         .call(drag2);
+
+      // Add animation for 'downed' nodes.
+      svgg.selectAll("image.down")
+        .append("svg:animate")
+          .attr("attributeType", "xml")
+          .attr("attributeName", "width")
+          .attr("values", "20;40;20")
+          .attr("dur", "2.0s")
+          .attr("repeatCount", "indefinite");
+      svgg.selectAll("image.down")
+        .append("svg:animate")
+          .attr("attributeType", "xml")
+          .attr("attributeName", "height")
+          .attr("values", "20;40;20")
+          .attr("dur", "2.0s")
+          .attr("repeatCount", "indefinite")
+      svgg.selectAll("image.down")
+        .append("svg:animate")
+          .attr("attributeType", "xml")
+          .attr("attributeName", "x")
+          .attr("values", "-10;-20;-10")
+          .attr("dur", "2.0s")
+          .attr("repeatCount", "indefinite")
+      svgg.selectAll("image.down")
+        .append("svg:animate")
+          .attr("attributeType", "xml")
+          .attr("attributeName", "y")
+          .attr("values", "-10;-20;-10")
+          .attr("dur", "2.0s")
+          .attr("repeatCount", "indefinite");
+
+      // Add animation for 'downed entity' nodes.
+      svgg.selectAll("image.entity")
+        .append("svg:animate")
+            .attr("attributeType", "xml")
+            .attr("attributeName", "width")
+            .attr("values", "20;80;20")
+            .attr("dur", "1.0s")
+            .attr("repeatCount", "indefinite");
+        svgg.selectAll("image.entity")
+          .append("svg:animate")
+            .attr("attributeType", "xml")
+            .attr("attributeName", "height")
+            .attr("values", "20;80;20")
+            .attr("dur", "1.0s")
+            .attr("repeatCount", "indefinite")
+        svgg.selectAll("image.entity")
+          .append("svg:animate")
+            .attr("attributeType", "xml")
+            .attr("attributeName", "x")
+            .attr("values", "-10;-40;-10")
+            .attr("dur", "1.0s")
+            .attr("repeatCount", "indefinite")
+        svgg.selectAll("image.entity")
+          .append("svg:animate")
+            .attr("attributeType", "xml")
+            .attr("attributeName", "y")
+            .attr("values", "-10;-40;-10")
+            .attr("dur", "1.0s")
+            .attr("repeatCount", "indefinite");
+
 
       var text = svgg.append("svg:g").selectAll("g")
         .data(force.nodes())
@@ -299,6 +376,22 @@
         d3.select(this).classed("dragging", false);
       }
 
+      function singleclick(d) {
+        if (d && d.docURI) {
+          showDoc(d.docURI)
+        }
+      };
+
+      function showDoc(docUri) {
+        mlRest.getDocument(docUri)
+          .then(function(response) {
+            if (response && response.data) {
+              ctrl.nodeData = renderJSON(response.data);
+              ctrl.showNodeData = true;
+            }
+          });
+      };
+
       function arcPath(leftHand, d) {
         var start = leftHand ? d.source : d.target,
           end = leftHand ? d.target : d.source,
@@ -329,6 +422,28 @@
         text.attr("transform", function(d) {
           return "translate(" + d.x + "," + d.y + ")";
         });
+      };
+
+      function renderJSON(obj) {
+        var display = '';
+        for (var prop in obj) {
+          display += '<ul>';
+          if (obj.hasOwnProperty(prop)) {
+            display += '<li>';
+            display += '<span class="json-key">' + prop.replace("label", "name") + ': </span>';
+            if (typeof obj[prop] === "object") {
+              display += renderJSON(obj[prop]);
+            } else {
+              display += '<span class="json-value">'+obj[prop]+'</span>';
+            }
+
+            display += '</li>';
+          }
+
+          display += '</ul>';
+        }
+
+        return display;
       };
     };
   }

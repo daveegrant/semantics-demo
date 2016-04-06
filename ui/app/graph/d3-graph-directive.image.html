@@ -1,3 +1,7 @@
 <div>
   <div id="containerImage"></div>
+  <div id="json-viewer" ng-if="ctrl.nodeData && ctrl.showNodeData">
+    <a ng-click="ctrl.hideNodeData()" class="pull-right close-icon"><span class="glyphicon glyphicon-remove"></span></a>
+    <div id="json-viewer" dynamic="ctrl.nodeData" >{{ctrl.nodeData}}</div>
+  </div>
 </div>

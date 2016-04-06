@@ -67,13 +67,19 @@
       return myp;
     }
 
+    function submitScope() {
+      ctrl.scopeId = ctrl.pendingScopeId;
+    }
+
     angular.extend(ctrl, {
       doc : doc.data,
       uri : uri,
       iri : iri,
       scopeId: scopeId,
+      pendingScopeId: scopeId,
       profile : profile,
-      suggest: suggest
+      suggest: suggest,
+      submitScope: submitScope
     });
   }
 }());

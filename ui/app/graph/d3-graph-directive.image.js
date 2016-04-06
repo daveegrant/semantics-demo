@@ -28,8 +28,7 @@
       controllerAs: 'ctrl',
       scope: { scopeId: '@' }
     };
-
-  }
+  };
 
   mlD3GraphControllerImage.$inject = ['$scope', 'MLRest', '$location'];
 
@@ -38,19 +37,22 @@
 
     angular.extend(ctrl, {
       id: '',
+      nodeData: null,
+      showNodeData: true,
       links: [],
       nodes: null,
-      init: init
+      search: search,
+      hideNodeData: hideNodeData
     });
 
     $scope.$watch('scopeId', function(newValue) {
       clearGraph();
-      init();
+      search();
     });
 
-    init();
+    search();
 
-    function init() {
+    function search() {
       ctrl.id =  $scope.scopeId;
 
       mlRest.extension('rootcauseanalysis',
@@ -65,9 +67,13 @@
           if (response && response.data) {
             ctrl.links = response.data;
             processLinks(ctrl.links);
-            initGraph();
+            updateGraph();
           }
         });
+    };
+
+    function hideNodeData() {
+      ctrl.showNodeData = false;
     };
 
     function processLinks(links) {
@@ -106,9 +112,9 @@
     function clearGraph() {
       // d3.select("svg").remove();
       d3.select("#imageGraph").remove();
-    }
+    };
 
-    function initGraph() {
+    function updateGraph() {
       var width = 800; //960,
       var height = 500;  //500;
       var absUrl = $location.absUrl();
@@ -184,15 +190,52 @@
             return d.objectType.replace(/["]/g, '');
           })
           .attr("xlink:href", function(d) {
-            return "/images/" + d.objectType + ".png";
+            var type = d.objectType;
+            var idx = type.indexOf(' down');
+            if (idx >= 0) {
+              type = type.substring(0, idx);
+            }
+            return "/images/" + type + ".png";
           })
           .attr("x", "-10px")
           .attr("y", "-10px")
           .attr("width", "20px")
           .attr("height", "20px")
         .on("dblclick", dblclick)
+        .on("click", singleclick)
         // .call(force.drag);
         .call(drag2);
+
+      // Add animation for 'downed' nodes.
+      svgg.selectAll("image.down")
+        .append("svg:animate")
+          .attr("attributeType", "xml")
+          .attr("attributeName", "width")
+          .attr("values", "20;40;20")
+          .attr("dur", "1.5s")
+          .attr("repeatCount", "indefinite");
+      svgg.selectAll("image.down")
+        .append("svg:animate")
+          .attr("attributeType", "xml")
+          .attr("attributeName", "height")
+          .attr("values", "20;40;20")
+          .attr("dur", "1.5s")
+          .attr("repeatCount", "indefinite")
+      svgg.selectAll("image.down")
+        .append("svg:animate")
+          .attr("attributeType", "xml")
+          .attr("attributeName", "x")
+          .attr("values", "-10;-20;-10")
+          .attr("dur", "1.5s")
+          .attr("repeatCount", "indefinite")
+      svgg.selectAll("image.down")
+        .append("svg:animate")
+          .attr("attributeType", "xml")
+          .attr("attributeName", "y")
+          .attr("values", "-10;-20;-10")
+          .attr("dur", "1.5s")
+          .attr("repeatCount", "indefinite");
+
 
       var text = svgg.append("svg:g").selectAll("g")
         .data(force.nodes())
@@ -272,6 +315,22 @@
         d3.select(this).classed("dragging", false);
       }
 
+      function singleclick(d) {
+        if (d && d.docURI) {
+          showDoc(d.docURI)
+        }
+      };
+
+      function showDoc(docUri) {
+        mlRest.getDocument(docUri)
+          .then(function(response) {
+            if (response && response.data) {
+              ctrl.nodeData = renderJSON(response.data);
+              ctrl.showNodeData = true;
+            }
+          });
+      };
+
       function arcPath(leftHand, d) {
         var start = leftHand ? d.source : d.target,
           end = leftHand ? d.target : d.source,
@@ -302,6 +361,28 @@
         text.attr("transform", function(d) {
           return "translate(" + d.x + "," + d.y + ")";
         });
+      };
+
+      function renderJSON(obj) {
+        var display = '';
+        for (var prop in obj) {
+          display += '<ul>';
+          if (obj.hasOwnProperty(prop)) {
+            display += '<li>';
+            display += '<span class="json-key">' + prop.replace("label", "name") + ': </span>';
+            if (typeof obj[prop] === "object") {
+              display += renderJSON(obj[prop]);
+            } else {
+              display += '<span class="json-value">'+obj[prop]+'</span>';
+            }
+
+            display += '</li>';
+          }
+
+          display += '</ul>';
+        }
+
+        return display;
       };
     };
   }

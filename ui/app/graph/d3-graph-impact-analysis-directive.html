@@ -3,13 +3,14 @@
     <div class="row">
       <label class="col-md-2 control-label">Down Entity: </label>
       <div class="col-md-9">
-        <input type="text" class="form-control" placeholder="Enter Down Entity..." ng-model="downEntity" typeahead="suggestion for suggestion in ctrl.suggest({ val: $viewValue })" typeahead-loading="loadingSuggestions" />
-      </div>
-      <div class="col-md-1">
-        <button class="btn btn-primary" ng-click="">Submit</button>
+        <input type="text" class="form-control" placeholder="Enter Down Entity..." ng-model="ctrl.downEntity" typeahead="suggestion for suggestion in ctrl.suggest({ val: $viewValue })" typeahead-loading="loadingSuggestions" />
       </div>
     </div>
     <div class="row"></div>
   </div>
   <div id="containerImpact"></div>
+  <div id="json-viewer" ng-if="ctrl.nodeData && ctrl.showNodeData">
+    <a ng-click="ctrl.hideNodeData()" class="pull-right close-icon"><span class="glyphicon glyphicon-remove"></span></a>
+    <div id="json-viewer" dynamic="ctrl.nodeData" >{{ctrl.nodeData}}</div>
+  </div>
 </div>

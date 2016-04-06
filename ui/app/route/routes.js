@@ -48,9 +48,15 @@
           }
         }
       })
+      // .state('root.landing', {
+      //   url: '/',
+      //   templateUrl: 'app/landing/landing.html'
+      // })
       .state('root.landing', {
         url: '/',
-        templateUrl: 'app/landing/landing.html'
+        templateUrl: 'app/search/search.html',
+        controller: 'SearchCtrl',
+        controllerAs: 'ctrl'
       })
       .state('root.search', {
         url: '/search',

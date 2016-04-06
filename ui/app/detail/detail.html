@@ -3,10 +3,10 @@
     <div class="row">
       <label class="col-md-1 control-label">Scope: </label>
       <div class="col-md-10">
-        <input type="text" class="form-control" placeholder="Enter Scope..." ng-model="ctrl.scopeId" typeahead="suggestion for suggestion in ctrl.suggest({ val: $viewValue })" typeahead-loading="loadingSuggestions" />
+        <input type="text" class="form-control" placeholder="Enter Scope..." ng-model="ctrl.pendingScopeId" typeahead="suggestion for suggestion in ctrl.suggest({ val: $viewValue })" typeahead-loading="loadingSuggestions" />
       </div>
       <div class="col-md-1">
-        <button class="btn btn-primary" ng-click="">Submit</button>
+        <button class="btn btn-primary" ng-click="ctrl.submitScope()">Submit</button>
       </div>
     </div>
     <div class="row"></div>
@@ -22,7 +22,7 @@
         <ml-d3-graph-zoom uri={{ctrl.uri}}></ml-d3-graph-zoom>
       </uib-tab> -->
       <uib-tab active="true">
-        <uib-tab-heading >Graph</uib-tab-heading>
+        <uib-tab-heading >Root Cause Analysis</uib-tab-heading>
         <ml-d3-graph-image scope-id={{ctrl.scopeId}}></ml-d3-graph-image>
       </uib-tab>
       <uib-tab>
