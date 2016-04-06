@@ -1,0 +1,10 @@
+{
+  "ml-version": "8",
+  "ml-host": "dev-v84-ml1",
+  "ml-admin-user": "admin",
+  "ml-admin-pass": "admin",
+  "ml-app-user": "admin",
+  "ml-app-pass": "admin",
+  "ml-http-port": "9010",
+  "node-port": "9020"
+}

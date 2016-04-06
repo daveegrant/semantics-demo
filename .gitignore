@@ -4,7 +4,6 @@ coverage
 ui/fonts
 ui/styles/*.css
 deploy/local.properties
-local.json
 /dist
 .DS_Store
 *.pid
