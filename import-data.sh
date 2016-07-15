@@ -133,3 +133,16 @@ $mlcpPath/mlcp.sh import  \
   -input_file_path content/data/data/relationships.json \
   -output_permissions semantics-demo-role,read \
   -output_uri_replace ".*\/content/data/data,'/data'"
+
+# Import the relationships
+$mlcpPath/mlcp.sh import  \
+  -username $user \
+  -password $passwd \
+  -host $host  \
+  -port $port \
+  -mode local \
+  -output_collections downedData \
+  -input_file_path content/data/data/downedResources.json \
+  -output_permissions semantics-demo-role,read \
+  -output_uri_replace ".*\/content/data/data,'/data'"
+
