@@ -339,7 +339,8 @@
           .style("fill","red")
           .append("svg:textPath")
             .attr("xlink:href", function(d, e) { return "#link_" + e; })
-            .text(function(d, i) { return 'text for link ' + i; });
+            .text(function(d, i) { console.log(d, i); return ''; });
+            // .text(function(d, i) { return 'text for link ' + i; });
             // .text(function(d) { return d.type; });
 
       // Keep the graph from bouncing initially.
